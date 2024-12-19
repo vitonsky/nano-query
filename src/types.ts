@@ -2,7 +2,13 @@ import { PreparedValue } from './core/PreparedValue';
 import { RawQuery } from './core/RawQuery';
 import { RawValue } from './core/RawValue';
 
-export type QueryBindings = string | number | null;
+export type PrimitiveValue = string | number | null;
+
+export interface Value<T> {
+	getValue: () => T;
+}
+
+export type QueryBindings = PrimitiveValue;
 export type QuerySegment = RawValue | RawQuery | PreparedValue;
 export type QueryParameter = QuerySegment | QueryBindings;
 
