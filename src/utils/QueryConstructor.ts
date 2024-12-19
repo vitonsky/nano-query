@@ -1,12 +1,12 @@
 import { PreparedValue } from '../core/PreparedValue';
 import { RawQuery } from '../core/RawQuery';
-import { RawValue } from '../core/RawValue';
+import { RawSegment } from '../core/RawSegment';
 import { IQuery, QuerySegment, RawQueryParameter } from '../types';
 
 export const isEmptySegment = (segment: QuerySegment): boolean => {
 	if (segment instanceof PreparedValue) return false;
 
-	if (segment instanceof RawValue) {
+	if (segment instanceof RawSegment) {
 		const value = segment.getValue();
 		return value === '' || value === null;
 	}
@@ -48,7 +48,7 @@ export class QueryConstructor extends RawQuery implements IQuery {
 
 			// Add divider between segments
 			if (preparedQuery.length > 0 && join !== null) {
-				preparedQuery.push(new RawValue(join));
+				preparedQuery.push(new RawSegment(join));
 			}
 
 			preparedQuery.push(segment);

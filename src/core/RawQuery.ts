@@ -1,6 +1,6 @@
 import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from '../types';
 import { PreparedValue } from './PreparedValue';
-import { RawValue } from './RawValue';
+import { RawSegment } from './RawSegment';
 
 export const filterOutEmptySegments = (segments: RawQueryParameter[]) =>
 	segments.filter((segment) => segment !== undefined) as QueryParameter[];
@@ -60,10 +60,10 @@ export class RawQuery implements IQuery {
 				switch (typeof segment) {
 					case 'string':
 					case 'number':
-						return new RawValue(segment);
+						return new RawSegment(segment);
 
 					default:
-						return segment === null ? new RawValue(null) : segment;
+						return segment === null ? new RawSegment(null) : segment;
 				}
 			}),
 		);
