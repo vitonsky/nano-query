@@ -34,6 +34,8 @@
 				"lang": "en_US",
 				"skipWords": [
 					"Globals",
+					"workspace",
+					"sql",
 					"esm"
 				],
 				// Check if word contains numbers
@@ -125,7 +127,7 @@
 		],
 		// Codestyle
 		"indent": [
-			"error",
+			"off",
 			"tab",
 			{
 				"SwitchCase": 1
