@@ -1,5 +1,5 @@
 {
-	"name": "nano-query",
+	"name": "nano-queries",
 	"version": "0.0.1",
 	"description": "Simple and powerful query builder for any database",
 	"keywords": [
@@ -17,10 +17,10 @@
 	],
 	"license": "MIT",
 	"author": "Robert Vitonsky <https://github.com/vitonsky>",
-	"homepage": "https://github.com/vitonsky/nano-query",
+	"homepage": "https://github.com/vitonsky/nano-queries",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/vitonsky/nano-query"
+		"url": "https://github.com/vitonsky/nano-queries"
 	},
 	"scripts": {
 		"test": "jest",
