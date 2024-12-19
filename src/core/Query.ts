@@ -5,7 +5,7 @@ import { RawSegment } from './RawSegment';
 export const filterOutEmptySegments = (segments: RawQueryParameter[]) =>
 	segments.filter((segment) => segment !== undefined) as QueryParameter[];
 
-export class RawQuery implements IQuery {
+export class Query implements IQuery {
 	protected readonly query: QuerySegment[] = [];
 	constructor(...query: RawQueryParameter[]) {
 		if (query) {
@@ -35,7 +35,7 @@ export class RawQuery implements IQuery {
 		let sql = '';
 		const bindings: Array<string | number | null> = [];
 		for (const segment of this.exportQuery()) {
-			if (segment instanceof RawQuery) {
+			if (segment instanceof Query) {
 				const data = segment.toSQL();
 				sql += data.sql;
 				bindings.push(...data.bindings);

@@ -1,4 +1,4 @@
-import { RawQuery } from './core/RawQuery';
+import { Query } from './core/Query';
 import { LimitClause } from './LimitClause';
 import { SetExpression } from './SetExpression';
 import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from './types';
@@ -7,7 +7,7 @@ import { WhereClause } from './WhereClause';
 
 export type SelectStatementOptions = QueryParameter[];
 
-export class SelectStatement extends RawQuery implements IQuery {
+export class SelectStatement extends Query implements IQuery {
 	private readonly _select: QueryParameter[];
 	private readonly _from: QueryParameter[];
 	private readonly _limit: { limit?: number; offset?: number };

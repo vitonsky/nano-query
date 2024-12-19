@@ -1,8 +1,8 @@
-import { filterOutEmptySegments, RawQuery } from './core/RawQuery';
+import { filterOutEmptySegments, Query } from './core/Query';
 import { IQuery, QuerySegment, RawQueryParameter } from './types';
 import { QueryConstructor } from './utils/QueryConstructor';
 
-export class ConditionClause extends RawQuery implements IQuery {
+export class ConditionClause extends Query implements IQuery {
 	protected readonly clauses: Array<{
 		clause: QuerySegment;
 		join: 'AND' | 'OR';
@@ -16,7 +16,7 @@ export class ConditionClause extends RawQuery implements IQuery {
 		if (filteredQuery.length > 0) {
 			this.clauses.push({
 				join: 'AND',
-				clause: new RawQuery(...filteredQuery),
+				clause: new Query(...filteredQuery),
 			});
 		}
 
@@ -28,7 +28,7 @@ export class ConditionClause extends RawQuery implements IQuery {
 		if (filteredQuery.length > 0) {
 			this.clauses.push({
 				join: 'OR',
-				clause: new RawQuery(...filteredQuery),
+				clause: new Query(...filteredQuery),
 			});
 		}
 

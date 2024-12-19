@@ -1,9 +1,9 @@
-import { RawQuery } from './core/RawQuery';
+import { Query } from './core/Query';
 import { GroupExpression } from './GroupExpression';
 import { IQuery, QuerySegment } from './types';
 import { QueryConstructor } from './utils/QueryConstructor';
 
-export class SetExpression extends RawQuery implements IQuery {
+export class SetExpression extends Query implements IQuery {
 	public withParenthesis() {
 		return new GroupExpression(this);
 	}

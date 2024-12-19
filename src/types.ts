@@ -1,5 +1,5 @@
 import { PreparedValue } from './core/PreparedValue';
-import { RawQuery } from './core/RawQuery';
+import { Query } from './core/Query';
 import { RawSegment } from './core/RawSegment';
 
 export type PrimitiveValue = string | number | null;
@@ -9,7 +9,7 @@ export interface Value<T> {
 }
 
 export type QueryBindings = PrimitiveValue;
-export type QuerySegment = RawSegment | PreparedValue | RawQuery;
+export type QuerySegment = RawSegment | PreparedValue | Query;
 
 export type QueryParameter = QuerySegment | QueryBindings;
 export type RawQueryParameter = QueryParameter | undefined;
