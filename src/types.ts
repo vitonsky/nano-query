@@ -24,7 +24,7 @@ export interface IQuery {
 	 * Returns final query that may be preprocessed
 	 * Returned query will be used to compile SQL
 	 */
-	exportQuery(): QuerySegment[];
+	getSegments(): QuerySegment[];
 
 	/**
 	 * Compile query to SQL string and bindings

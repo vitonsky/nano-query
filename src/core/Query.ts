@@ -6,10 +6,10 @@ export const filterOutEmptySegments = (segments: RawQueryParameter[]) =>
 	segments.filter((segment) => segment !== undefined) as QueryParameter[];
 
 export class Query implements IQuery {
-	protected readonly query: QuerySegment[] = [];
-	constructor(...query: RawQueryParameter[]) {
-		if (query) {
-			this.push(...query);
+	protected readonly segments: QuerySegment[] = [];
+	constructor(...segments: RawQueryParameter[]) {
+		if (segments) {
+			this.addSegment(...segments);
 		}
 	}
 
@@ -17,15 +17,15 @@ export class Query implements IQuery {
 	 * Returns query segments number
 	 */
 	public size() {
-		return this.exportQuery().length;
+		return this.getSegments().length;
 	}
 
 	/**
 	 * Returns final query that may be preprocessed
 	 * Returned query will be used while compile SQL
 	 */
-	public exportQuery() {
-		return this.query;
+	public getSegments() {
+		return this.segments;
 	}
 
 	/**
@@ -34,7 +34,7 @@ export class Query implements IQuery {
 	public toSQL() {
 		let sql = '';
 		const bindings: Array<string | number | null> = [];
-		for (const segment of this.exportQuery()) {
+		for (const segment of this.getSegments()) {
 			if (segment instanceof Query) {
 				const data = segment.toSQL();
 				sql += data.sql;
@@ -54,9 +54,9 @@ export class Query implements IQuery {
 		return { sql, bindings };
 	}
 
-	protected push(...queries: RawQueryParameter[]) {
-		this.query.push(
-			...filterOutEmptySegments(queries).map((segment) => {
+	protected addSegment(...segments: RawQueryParameter[]) {
+		this.segments.push(
+			...filterOutEmptySegments(segments).map((segment) => {
 				switch (typeof segment) {
 					case 'string':
 					case 'number':

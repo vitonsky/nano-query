@@ -25,11 +25,11 @@ export class WhereClause extends Query implements IQuery {
 		return this;
 	}
 
-	public exportQuery(): QuerySegment[] {
+	public getSegments(): QuerySegment[] {
 		if (this.condition.size() === 0) return [];
 
 		return new QueryConstructor({ join: ' ' })
 			.raw('WHERE', this.condition)
-			.exportQuery();
+			.getSegments();
 	}
 }

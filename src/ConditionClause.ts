@@ -35,7 +35,7 @@ export class ConditionClause extends Query implements IQuery {
 		return this;
 	}
 
-	public exportQuery(): QuerySegment[] {
+	public getSegments(): QuerySegment[] {
 		const query = new QueryConstructor({ join: ' ' });
 
 		if (this.clauses.length > 0) {
@@ -44,7 +44,7 @@ export class ConditionClause extends Query implements IQuery {
 			});
 		}
 
-		return query.exportQuery();
+		return query.getSegments();
 	}
 
 	public size() {

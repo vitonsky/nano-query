@@ -48,7 +48,7 @@ export class SelectStatement extends Query implements IQuery {
 		return this;
 	}
 
-	public exportQuery(): QuerySegment[] {
+	public getSegments(): QuerySegment[] {
 		const query = new QueryConstructor({ join: ' ' });
 
 		query.raw('SELECT');
@@ -66,6 +66,6 @@ export class SelectStatement extends Query implements IQuery {
 
 		query.raw(new LimitClause(this._limit));
 
-		return query.exportQuery();
+		return query.getSegments();
 	}
 }

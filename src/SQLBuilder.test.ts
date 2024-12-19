@@ -9,7 +9,7 @@ import { QueryConstructor } from './utils/QueryConstructor';
 import { WhereClause } from './WhereClause';
 
 describe('Primitives', () => {
-	test('Query constructor able to add queries one by one', () => {
+	test('Query constructor able to add segments one by one', () => {
 		expect(
 			new QueryConstructor({ join: null })
 				.raw('SELECT * FROM foo WHERE foo=')

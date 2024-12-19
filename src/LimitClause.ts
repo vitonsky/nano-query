@@ -9,7 +9,7 @@ export class LimitClause extends Query implements IQuery {
 		this.state = state;
 	}
 
-	public exportQuery(): QuerySegment[] {
+	public getSegments(): QuerySegment[] {
 		const { limit, offset } = this.state;
 
 		const query = new QueryConstructor({ join: ' ' });
@@ -22,6 +22,6 @@ export class LimitClause extends Query implements IQuery {
 			query.raw('OFFSET').value(offset);
 		}
 
-		return query.exportQuery();
+		return query.getSegments();
 	}
 }

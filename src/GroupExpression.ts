@@ -2,8 +2,8 @@ import { Query } from './core/Query';
 import { IQuery } from './types';
 
 export class GroupExpression extends Query implements IQuery {
-	public exportQuery() {
-		const segments = super.exportQuery();
+	public getSegments() {
+		const segments = super.getSegments();
 
 		if (segments.length === 0) return [];
 

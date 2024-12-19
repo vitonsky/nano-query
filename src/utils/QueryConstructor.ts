@@ -34,16 +34,16 @@ export class QueryConstructor extends Query implements IQuery {
 		return this.raw(new PreparedValue(value));
 	};
 
-	public raw(...queries: RawQueryParameter[]) {
-		this.push(...queries);
+	public raw(...segments: RawQueryParameter[]) {
+		this.addSegment(...segments);
 		return this;
 	}
 
-	public exportQuery() {
+	public getSegments() {
 		const { join } = this.options;
 
 		const preparedQuery: QuerySegment[] = [];
-		this.query.forEach((segment) => {
+		this.segments.forEach((segment) => {
 			if (isEmptySegment(segment)) return;
 
 			// Add divider between segments
