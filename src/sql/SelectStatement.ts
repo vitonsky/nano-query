@@ -1,6 +1,6 @@
 import { Query } from '../core/Query';
+import { QueryBuilder } from '../QueryBuilder';
 import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from '../types';
-import { QueryConstructor } from '../utils/QueryConstructor';
 import { LimitClause } from './LimitClause';
 import { SetExpression } from './SetExpression';
 import { WhereClause } from './WhereClause';
@@ -49,7 +49,7 @@ export class SelectStatement extends Query implements IQuery {
 	}
 
 	public getSegments(): QuerySegment[] {
-		const query = new QueryConstructor({ join: ' ' });
+		const query = new QueryBuilder({ join: ' ' });
 
 		query.raw('SELECT');
 

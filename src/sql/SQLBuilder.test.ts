@@ -1,5 +1,5 @@
 import { PreparedValue } from '../core/PreparedValue';
-import { QueryConstructor } from '../utils/QueryConstructor';
+import { QueryBuilder } from '../QueryBuilder';
 import { qb } from './builder';
 import { ConditionClause } from './ConditionClause';
 import { GroupExpression } from './GroupExpression';
@@ -11,7 +11,7 @@ import { WhereClause } from './WhereClause';
 describe('Primitives', () => {
 	test('Query constructor able to add segments one by one', () => {
 		expect(
-			new QueryConstructor({ join: null })
+			new QueryBuilder({ join: null })
 				.raw('SELECT * FROM foo WHERE foo=')
 				.value(1)
 				.raw(' LIMIT 2')
@@ -24,10 +24,10 @@ describe('Primitives', () => {
 
 	test('Query constructors may be nested', () => {
 		expect(
-			new QueryConstructor({ join: null })
+			new QueryBuilder({ join: null })
 				.raw(
 					'SELECT * FROM foo WHERE foo IN ',
-					new QueryConstructor({ join: null })
+					new QueryBuilder({ join: null })
 						.raw('(SELECT id FROM bar WHERE x > ')
 						.value(100)
 						.raw(')'),
@@ -40,9 +40,9 @@ describe('Primitives', () => {
 	});
 
 	test('Query constructors may be nested with no introduce a variables', () => {
-		const query = new QueryConstructor({ join: null }).raw(
+		const query = new QueryBuilder({ join: null }).raw(
 			'SELECT * FROM foo WHERE foo IN ',
-			new QueryConstructor({ join: null }).raw(
+			new QueryBuilder({ join: null }).raw(
 				'(SELECT id FROM bar WHERE x > ',
 				new PreparedValue(100),
 				')',
@@ -167,7 +167,7 @@ describe('Basic clauses', () => {
 		});
 
 		test('Complex condition expression consider a grouping', () => {
-			const query = new QueryConstructor({ join: null }).raw(
+			const query = new QueryBuilder({ join: null }).raw(
 				'SELECT * FROM foo WHERE ',
 				new ConditionClause()
 					.and('x > ', new PreparedValue(0))
@@ -190,7 +190,7 @@ describe('Basic clauses', () => {
 	describe('Where clause', () => {
 		test('Where clause may be filled after join', () => {
 			const where = new WhereClause();
-			const query = new QueryConstructor({ join: null }).raw(
+			const query = new QueryBuilder({ join: null }).raw(
 				'SELECT * FROM foo ',
 				where,
 			);
@@ -228,7 +228,7 @@ describe('Statements', () => {
 				new SelectStatement()
 					.from('foo')
 					.select('x', 'y', 'z')
-					.where(new QueryConstructor().raw('bar=').value(100))
+					.where(new QueryBuilder().raw('bar=').value(100))
 					.limit(50)
 					.offset(200)
 					.toSQL(),
@@ -256,9 +256,9 @@ describe('Statements', () => {
 					.from('foo AS f')
 					.select(
 						'x AS alias',
-						new QueryConstructor({ join: ' ' }).value(123).raw('AS value'),
+						new QueryBuilder({ join: ' ' }).value(123).raw('AS value'),
 					)
-					.where(new QueryConstructor().raw('bar=').value(100))
+					.where(new QueryBuilder().raw('bar=').value(100))
 					.toSQL(),
 			).toEqual({
 				sql: 'SELECT x AS alias,? AS value FROM foo AS f WHERE bar=?',

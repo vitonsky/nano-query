@@ -1,6 +1,6 @@
 import { Query } from '../core/Query';
+import { QueryBuilder } from '../QueryBuilder';
 import { IQuery, QuerySegment } from '../types';
-import { QueryConstructor } from '../utils/QueryConstructor';
 import { GroupExpression } from './GroupExpression';
 
 export class SetExpression extends Query implements IQuery {
@@ -9,7 +9,7 @@ export class SetExpression extends Query implements IQuery {
 	}
 
 	public getSegments(): QuerySegment[] {
-		const query = new QueryConstructor();
+		const query = new QueryBuilder();
 
 		super.getSegments().forEach((item, index) => {
 			const preparedItem =

@@ -1,6 +1,6 @@
 import { Query } from '../core/Query';
+import { QueryBuilder } from '../QueryBuilder';
 import { IQuery, QuerySegment, RawQueryParameter } from '../types';
-import { QueryConstructor } from '../utils/QueryConstructor';
 import { ConditionClause } from './ConditionClause';
 
 export class WhereClause extends Query implements IQuery {
@@ -28,8 +28,6 @@ export class WhereClause extends Query implements IQuery {
 	public getSegments(): QuerySegment[] {
 		if (this.condition.size() === 0) return [];
 
-		return new QueryConstructor({ join: ' ' })
-			.raw('WHERE', this.condition)
-			.getSegments();
+		return new QueryBuilder({ join: ' ' }).raw('WHERE', this.condition).getSegments();
 	}
 }

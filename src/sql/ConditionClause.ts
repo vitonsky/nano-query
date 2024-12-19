@@ -1,6 +1,6 @@
 import { filterOutEmptySegments, Query } from '../core/Query';
+import { QueryBuilder } from '../QueryBuilder';
 import { IQuery, QuerySegment, RawQueryParameter } from '../types';
-import { QueryConstructor } from '../utils/QueryConstructor';
 
 export class ConditionClause extends Query implements IQuery {
 	protected readonly clauses: Array<{
@@ -36,7 +36,7 @@ export class ConditionClause extends Query implements IQuery {
 	}
 
 	public getSegments(): QuerySegment[] {
-		const query = new QueryConstructor({ join: ' ' });
+		const query = new QueryBuilder({ join: ' ' });
 
 		if (this.clauses.length > 0) {
 			this.clauses.forEach((clause, index) => {

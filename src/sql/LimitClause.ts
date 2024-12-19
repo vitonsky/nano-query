@@ -1,6 +1,6 @@
 import { Query } from '../core/Query';
+import { QueryBuilder } from '../QueryBuilder';
 import { IQuery, QuerySegment } from '../types';
-import { QueryConstructor } from '../utils/QueryConstructor';
 
 export class LimitClause extends Query implements IQuery {
 	private readonly state;
@@ -12,7 +12,7 @@ export class LimitClause extends Query implements IQuery {
 	public getSegments(): QuerySegment[] {
 		const { limit, offset } = this.state;
 
-		const query = new QueryConstructor({ join: ' ' });
+		const query = new QueryBuilder({ join: ' ' });
 
 		if (limit) {
 			query.raw('LIMIT').value(limit);
