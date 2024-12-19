@@ -1,12 +1,12 @@
-import { ConditionClause } from '../ConditionClause';
 import { PreparedValue } from '../core/PreparedValue';
-import { GroupExpression } from '../GroupExpression';
-import { LimitClause } from '../LimitClause';
-import { SelectStatement, SelectStatementOptions } from '../SelectStatement';
-import { SetExpression } from '../SetExpression';
 import { QueryBindings, RawQueryParameter } from '../types';
-import { WhereClause } from '../WhereClause';
-import { QueryConstructor } from './QueryConstructor';
+import { QueryConstructor } from '../utils/QueryConstructor';
+import { ConditionClause } from './ConditionClause';
+import { GroupExpression } from './GroupExpression';
+import { LimitClause } from './LimitClause';
+import { SelectStatement, SelectStatementOptions } from './SelectStatement';
+import { SetExpression } from './SetExpression';
+import { WhereClause } from './WhereClause';
 
 /**
  * SQL query builder

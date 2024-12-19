@@ -1,7 +1,7 @@
-import { Query } from './core/Query';
+import { Query } from '../core/Query';
+import { IQuery, QuerySegment } from '../types';
+import { QueryConstructor } from '../utils/QueryConstructor';
 import { GroupExpression } from './GroupExpression';
-import { IQuery, QuerySegment } from './types';
-import { QueryConstructor } from './utils/QueryConstructor';
 
 export class SetExpression extends Query implements IQuery {
 	public withParenthesis() {

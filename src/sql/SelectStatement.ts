@@ -1,8 +1,8 @@
-import { Query } from './core/Query';
+import { Query } from '../core/Query';
+import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from '../types';
+import { QueryConstructor } from '../utils/QueryConstructor';
 import { LimitClause } from './LimitClause';
 import { SetExpression } from './SetExpression';
-import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from './types';
-import { QueryConstructor } from './utils/QueryConstructor';
 import { WhereClause } from './WhereClause';
 
 export type SelectStatementOptions = QueryParameter[];

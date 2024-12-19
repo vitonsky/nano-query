@@ -1,6 +1,6 @@
-import { filterOutEmptySegments, Query } from './core/Query';
-import { IQuery, QuerySegment, RawQueryParameter } from './types';
-import { QueryConstructor } from './utils/QueryConstructor';
+import { filterOutEmptySegments, Query } from '../core/Query';
+import { IQuery, QuerySegment, RawQueryParameter } from '../types';
+import { QueryConstructor } from '../utils/QueryConstructor';
 
 export class ConditionClause extends Query implements IQuery {
 	protected readonly clauses: Array<{

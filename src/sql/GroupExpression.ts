@@ -1,5 +1,5 @@
-import { Query } from './core/Query';
-import { IQuery } from './types';
+import { Query } from '../core/Query';
+import { IQuery } from '../types';
 
 export class GroupExpression extends Query implements IQuery {
 	public getSegments() {

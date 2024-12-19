@@ -1,11 +1,11 @@
+import { PreparedValue } from '../core/PreparedValue';
+import { QueryConstructor } from '../utils/QueryConstructor';
+import { qb } from './builder';
 import { ConditionClause } from './ConditionClause';
-import { PreparedValue } from './core/PreparedValue';
 import { GroupExpression } from './GroupExpression';
 import { LimitClause } from './LimitClause';
 import { SelectStatement } from './SelectStatement';
 import { SetExpression } from './SetExpression';
-import { qb } from './utils/builder';
-import { QueryConstructor } from './utils/QueryConstructor';
 import { WhereClause } from './WhereClause';
 
 describe('Primitives', () => {
