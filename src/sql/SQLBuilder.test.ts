@@ -1,21 +1,27 @@
+import { SQLCompiler } from '../compilers/SQLCompiler';
 import { PreparedValue } from '../core/PreparedValue';
 import { QueryBuilder } from '../QueryBuilder';
-import { qb } from './builder';
+// import { qb } from './builder';
 import { ConditionClause } from './ConditionClause';
+import { ConfigurableSQLBuilder } from './ConfigurableSQLBuilder';
 import { GroupExpression } from './GroupExpression';
 import { LimitClause } from './LimitClause';
 import { SelectStatement } from './SelectStatement';
 import { SetExpression } from './SetExpression';
 import { WhereClause } from './WhereClause';
 
+const compiler = new SQLCompiler();
+const qb = new ConfigurableSQLBuilder(compiler);
+
 describe('Primitives', () => {
 	test('Query constructor able to add segments one by one', () => {
 		expect(
-			new QueryBuilder({ join: null })
-				.raw('SELECT * FROM foo WHERE foo=')
-				.value(1)
-				.raw(' LIMIT 2')
-				.toSQL(),
+			compiler.toSQL(
+				new QueryBuilder({ join: null })
+					.raw('SELECT * FROM foo WHERE foo=')
+					.value(1)
+					.raw(' LIMIT 2'),
+			),
 		).toEqual({
 			sql: 'SELECT * FROM foo WHERE foo=? LIMIT 2',
 			bindings: [1],
@@ -24,15 +30,15 @@ describe('Primitives', () => {
 
 	test('Query constructors may be nested', () => {
 		expect(
-			new QueryBuilder({ join: null })
-				.raw(
+			compiler.toSQL(
+				new QueryBuilder({ join: null }).raw(
 					'SELECT * FROM foo WHERE foo IN ',
 					new QueryBuilder({ join: null })
 						.raw('(SELECT id FROM bar WHERE x > ')
 						.value(100)
 						.raw(')'),
-				)
-				.toSQL(),
+				),
+			),
 		).toEqual({
 			sql: 'SELECT * FROM foo WHERE foo IN (SELECT id FROM bar WHERE x > ?)',
 			bindings: [100],
@@ -49,7 +55,7 @@ describe('Primitives', () => {
 			),
 		);
 
-		expect(query.toSQL()).toEqual({
+		expect(compiler.toSQL(query)).toEqual({
 			sql: 'SELECT * FROM foo WHERE foo IN (SELECT id FROM bar WHERE x > ?)',
 			bindings: [100],
 		});
@@ -59,7 +65,7 @@ describe('Primitives', () => {
 describe('Basic clauses', () => {
 	describe('Group expressions', () => {
 		test('Empty group expression yields empty query', () => {
-			expect(new GroupExpression().toSQL()).toEqual({
+			expect(compiler.toSQL(new GroupExpression())).toEqual({
 				sql: '',
 				bindings: [],
 			});
@@ -67,11 +73,13 @@ describe('Basic clauses', () => {
 
 		test('Nested group expression yields correct query', () => {
 			expect(
-				new GroupExpression(
-					new GroupExpression(new PreparedValue(1)),
-					' OR ',
-					new GroupExpression(new PreparedValue(2)),
-				).toSQL(),
+				compiler.toSQL(
+					new GroupExpression(
+						new GroupExpression(new PreparedValue(1)),
+						' OR ',
+						new GroupExpression(new PreparedValue(2)),
+					),
+				),
 			).toEqual({
 				sql: '((?) OR (?))',
 				bindings: [1, 2],
@@ -81,7 +89,7 @@ describe('Basic clauses', () => {
 
 	describe('Set expression', () => {
 		test('Set with literals', () => {
-			expect(new SetExpression('foo', 'bar', 'baz').toSQL()).toEqual({
+			expect(compiler.toSQL(new SetExpression('foo', 'bar', 'baz'))).toEqual({
 				sql: 'foo,bar,baz',
 				bindings: [],
 			});
@@ -89,7 +97,7 @@ describe('Basic clauses', () => {
 
 		test('Nested sets', () => {
 			expect(
-				new SetExpression('foo', new SetExpression('bar', 'baz')).toSQL(),
+				compiler.toSQL(new SetExpression('foo', new SetExpression('bar', 'baz'))),
 			).toEqual({
 				sql: 'foo,(bar,baz)',
 				bindings: [],
@@ -98,7 +106,7 @@ describe('Basic clauses', () => {
 
 		test('Set with parenthesis', () => {
 			expect(
-				new SetExpression('foo', 'bar', 'baz').withParenthesis().toSQL(),
+				compiler.toSQL(new SetExpression('foo', 'bar', 'baz').withParenthesis()),
 			).toEqual({
 				sql: '(foo,bar,baz)',
 				bindings: [],
@@ -108,19 +116,19 @@ describe('Basic clauses', () => {
 
 	describe('Limit expression', () => {
 		test('Limit', () => {
-			expect(new LimitClause({ limit: 10 }).toSQL()).toEqual({
+			expect(compiler.toSQL(new LimitClause({ limit: 10 }))).toEqual({
 				sql: 'LIMIT ?',
 				bindings: [10],
 			});
 		});
 		test('Offset', () => {
-			expect(new LimitClause({ offset: 20 }).toSQL()).toEqual({
+			expect(compiler.toSQL(new LimitClause({ offset: 20 }))).toEqual({
 				sql: 'OFFSET ?',
 				bindings: [20],
 			});
 		});
 		test('Limit and offset', () => {
-			expect(new LimitClause({ limit: 10, offset: 20 }).toSQL()).toEqual({
+			expect(compiler.toSQL(new LimitClause({ limit: 10, offset: 20 }))).toEqual({
 				sql: 'LIMIT ? OFFSET ?',
 				bindings: [10, 20],
 			});
@@ -131,7 +139,7 @@ describe('Basic clauses', () => {
 		test('Empty condition generates empty query', () => {
 			const query = new ConditionClause();
 
-			expect(query.toSQL()).toEqual({
+			expect(compiler.toSQL(query)).toEqual({
 				sql: '',
 				bindings: [],
 			});
@@ -140,14 +148,14 @@ describe('Basic clauses', () => {
 
 		test('Single condition yields just a literal', () => {
 			expect(
-				new ConditionClause().and('x > ', new PreparedValue(0)).toSQL(),
+				compiler.toSQL(new ConditionClause().and('x > ', new PreparedValue(0))),
 			).toEqual({
 				sql: 'x > ?',
 				bindings: [0],
 			});
 
 			expect(
-				new ConditionClause().or('x > ', new PreparedValue(0)).toSQL(),
+				compiler.toSQL(new ConditionClause().or('x > ', new PreparedValue(0))),
 			).toEqual({
 				sql: 'x > ?',
 				bindings: [0],
@@ -156,10 +164,11 @@ describe('Basic clauses', () => {
 
 		test('Trivial condition expression yields sql expression', () => {
 			expect(
-				new ConditionClause()
-					.and('x > ', new PreparedValue(0))
-					.or('y < ', new PreparedValue(1))
-					.toSQL(),
+				compiler.toSQL(
+					new ConditionClause()
+						.and('x > ', new PreparedValue(0))
+						.or('y < ', new PreparedValue(1)),
+				),
 			).toEqual({
 				sql: 'x > ? OR y < ?',
 				bindings: [0, 1],
@@ -180,7 +189,7 @@ describe('Basic clauses', () => {
 					),
 			);
 
-			expect(query.toSQL()).toEqual({
+			expect(compiler.toSQL(query)).toEqual({
 				sql: 'SELECT * FROM foo WHERE x > ? OR (y=? AND z=?)',
 				bindings: [0, 1, 2],
 			});
@@ -206,14 +215,14 @@ describe('Basic clauses', () => {
 					),
 				);
 
-			expect(query.toSQL()).toEqual({
+			expect(compiler.toSQL(query)).toEqual({
 				sql: 'SELECT * FROM foo WHERE x > ? OR (y=? AND z=?)',
 				bindings: [0, 1, 2],
 			});
 		});
 
 		test('Empty where clause generates empty query', () => {
-			expect(new WhereClause().toSQL()).toEqual({
+			expect(compiler.toSQL(new WhereClause())).toEqual({
 				sql: '',
 				bindings: [],
 			});
@@ -225,13 +234,14 @@ describe('Statements', () => {
 	describe('Select', () => {
 		test('Trivial select', () => {
 			expect(
-				new SelectStatement()
-					.from('foo')
-					.select('x', 'y', 'z')
-					.where(new QueryBuilder().raw('bar=').value(100))
-					.limit(50)
-					.offset(200)
-					.toSQL(),
+				compiler.toSQL(
+					new SelectStatement()
+						.from('foo')
+						.select('x', 'y', 'z')
+						.where(new QueryBuilder().raw('bar=').value(100))
+						.limit(50)
+						.offset(200),
+				),
 			).toEqual({
 				sql: 'SELECT x,y,z FROM foo WHERE bar=? LIMIT ? OFFSET ?',
 				bindings: [100, 50, 200],
@@ -240,10 +250,11 @@ describe('Statements', () => {
 
 		test('Parameters in constructor', () => {
 			expect(
-				new SelectStatement('x', 'y')
-					.from('foo f', 'LEFT JOIN bar b')
-					.select('z')
-					.toSQL(),
+				compiler.toSQL(
+					new SelectStatement('x', 'y')
+						.from('foo f', 'LEFT JOIN bar b')
+						.select('z'),
+				),
 			).toEqual({
 				sql: 'SELECT x,y,z FROM foo f LEFT JOIN bar b',
 				bindings: [],
@@ -252,14 +263,15 @@ describe('Statements', () => {
 
 		test('Aliases in select', () => {
 			expect(
-				new SelectStatement()
-					.from('foo AS f')
-					.select(
-						'x AS alias',
-						new QueryBuilder({ join: ' ' }).value(123).raw('AS value'),
-					)
-					.where(new QueryBuilder().raw('bar=').value(100))
-					.toSQL(),
+				compiler.toSQL(
+					new SelectStatement()
+						.from('foo AS f')
+						.select(
+							'x AS alias',
+							new QueryBuilder({ join: ' ' }).value(123).raw('AS value'),
+						)
+						.where(new QueryBuilder().raw('bar=').value(100)),
+				),
 			).toEqual({
 				sql: 'SELECT x AS alias,? AS value FROM foo AS f WHERE bar=?',
 				bindings: [123, 100],
@@ -306,12 +318,12 @@ describe('Query builder', () => {
 				qb.offset(10),
 			);
 
-		expect(query(['foo', 'bar', 123]).toSQL()).toEqual({
+		expect(qb.toSQL(query(['foo', 'bar', 123]))).toEqual({
 			sql: 'SELECT * FROM notes WHERE workspace_id=? AND id IN (SELECT target FROM attachedTags WHERE source IN (?,?,?)) LIMIT ? OFFSET ?',
 			bindings: ['fake-uuid', 'foo', 'bar', 123, 20, 10],
 		});
 
-		expect(query([]).toSQL()).toEqual({
+		expect(qb.toSQL(query([]))).toEqual({
 			sql: 'SELECT * FROM notes WHERE workspace_id=? LIMIT ? OFFSET ?',
 			bindings: ['fake-uuid', 20, 10],
 		});
@@ -319,30 +331,30 @@ describe('Query builder', () => {
 
 	test('Empty blocks yields nothing', () => {
 		expect(
-			qb
-				.line(
+			qb.toSQL(
+				qb.line(
 					qb.raw('SELECT * FROM notes'),
 					qb.where(undefined),
 					qb.limit(20),
 					qb.offset(10),
-				)
-				.toSQL(),
+				),
+			),
 		).toEqual({
 			sql: 'SELECT * FROM notes LIMIT ? OFFSET ?',
 			bindings: [20, 10],
 		});
 
 		expect(
-			qb
-				.line(
+			qb.toSQL(
+				qb.line(
 					qb.raw(undefined, null),
 					qb.condition(undefined),
 					qb.group(undefined),
 					qb.where(undefined),
 					qb.limit(undefined),
 					qb.offset(undefined),
-				)
-				.toSQL(),
+				),
+			),
 		).toEqual({
 			sql: '',
 			bindings: [],

@@ -25,9 +25,4 @@ export interface IQuery {
 	 * Returned query will be used to compile SQL
 	 */
 	getSegments(): QuerySegment[];
-
-	/**
-	 * Compile query to SQL string and bindings
-	 */
-	toSQL(): { sql: string; bindings: QueryBindings[] };
 }

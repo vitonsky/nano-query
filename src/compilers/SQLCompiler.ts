@@ -59,4 +59,12 @@ export class SQLCompiler implements Compiler<CommandWithBindings<QueryBindings>>
 
 		return processQuery(query);
 	}
+
+	/**
+	 * Compile query to SQL string and bindings
+	 */
+	public toSQL = (query: Query): { sql: string; bindings: QueryBindings[] } => {
+		const { command: sql, bindings } = this.compile(query);
+		return { sql, bindings };
+	};
 }

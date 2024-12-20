@@ -1,5 +1,4 @@
 import { IQuery, QueryParameter, QuerySegment, RawQueryParameter } from '../types';
-import { PreparedValue } from './PreparedValue';
 import { RawSegment } from './RawSegment';
 
 export const filterOutEmptySegments = (segments: RawQueryParameter[]) =>
@@ -26,32 +25,6 @@ export class Query implements IQuery {
 	 */
 	public getSegments() {
 		return this.segments;
-	}
-
-	/**
-	 * Compile query to SQL string and bindings
-	 */
-	public toSQL() {
-		let sql = '';
-		const bindings: Array<string | number | null> = [];
-		for (const segment of this.getSegments()) {
-			if (segment instanceof Query) {
-				const data = segment.toSQL();
-				sql += data.sql;
-				bindings.push(...data.bindings);
-				continue;
-			}
-
-			if (segment instanceof PreparedValue) {
-				sql += '?';
-				bindings.push(segment.getValue());
-				continue;
-			}
-
-			sql += segment.getValue();
-		}
-
-		return { sql, bindings };
 	}
 
 	protected addSegment(...segments: RawQueryParameter[]) {
