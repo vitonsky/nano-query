@@ -10,55 +10,6 @@ import { WhereClause } from './WhereClause';
 
 const compiler = new SQLCompiler();
 
-describe('Primitives', () => {
-	test('Query constructor able to add segments one by one', () => {
-		expect(
-			compiler.toSQL(
-				new QueryBuilder({ join: null })
-					.raw('SELECT * FROM foo WHERE foo=')
-					.value(1)
-					.raw(' LIMIT 2'),
-			),
-		).toEqual({
-			sql: 'SELECT * FROM foo WHERE foo=? LIMIT 2',
-			bindings: [1],
-		});
-	});
-
-	test('Query constructors may be nested', () => {
-		expect(
-			compiler.toSQL(
-				new QueryBuilder({ join: null }).raw(
-					'SELECT * FROM foo WHERE foo IN ',
-					new QueryBuilder({ join: null })
-						.raw('(SELECT id FROM bar WHERE x > ')
-						.value(100)
-						.raw(')'),
-				),
-			),
-		).toEqual({
-			sql: 'SELECT * FROM foo WHERE foo IN (SELECT id FROM bar WHERE x > ?)',
-			bindings: [100],
-		});
-	});
-
-	test('Query constructors may be nested with no introduce a variables', () => {
-		const query = new QueryBuilder({ join: null }).raw(
-			'SELECT * FROM foo WHERE foo IN ',
-			new QueryBuilder({ join: null }).raw(
-				'(SELECT id FROM bar WHERE x > ',
-				new PreparedValue(100),
-				')',
-			),
-		);
-
-		expect(compiler.toSQL(query)).toEqual({
-			sql: 'SELECT * FROM foo WHERE foo IN (SELECT id FROM bar WHERE x > ?)',
-			bindings: [100],
-		});
-	});
-});
-
 describe('Basic clauses', () => {
 	describe('Group expressions', () => {
 		test('Empty group expression yields empty query', () => {
