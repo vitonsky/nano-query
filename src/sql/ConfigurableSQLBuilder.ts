@@ -22,6 +22,7 @@ export class ConfigurableSQLBuilder {
 		new QueryBuilder({ join: ' ' }).raw(...segments);
 	public group = (...segments: RawQueryParameter[]) => new GroupExpression(...segments);
 	public set = (segments: RawQueryParameter[]) => new SetExpression(...segments);
+	public value = (value: QueryBindings) => new PreparedValue(value);
 	public values = (values: Array<QueryBindings> | Record<string, QueryBindings>) => {
 		if (Array.isArray(values)) {
 			return new SetExpression(...values.map((value) => new PreparedValue(value)));

@@ -6,10 +6,10 @@ const qb = new ConfigurableSQLBuilder(new SQLCompiler());
 test('Complex query building', () => {
 	const query = (sources: (string | number)[]) =>
 		qb.line(
-			qb.raw('SELECT * FROM notes'),
+			'SELECT * FROM notes',
 			qb.where(
 				qb
-					.condition(qb.raw('workspace_id=').value('fake-uuid'))
+					.condition('workspace_id=', qb.value('fake-uuid'))
 					.and(
 						sources.length === 0
 							? undefined
