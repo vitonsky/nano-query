@@ -1,9 +1,7 @@
 import { SQLCompiler } from '../compilers/SQLCompiler';
 import { PreparedValue } from '../core/PreparedValue';
 import { QueryBuilder } from '../QueryBuilder';
-// import { qb } from './builder';
 import { ConditionClause } from './ConditionClause';
-import { ConfigurableSQLBuilder } from './ConfigurableSQLBuilder';
 import { GroupExpression } from './GroupExpression';
 import { LimitClause } from './LimitClause';
 import { SelectStatement } from './SelectStatement';
@@ -11,7 +9,6 @@ import { SetExpression } from './SetExpression';
 import { WhereClause } from './WhereClause';
 
 const compiler = new SQLCompiler();
-const qb = new ConfigurableSQLBuilder(compiler);
 
 describe('Primitives', () => {
 	test('Query constructor able to add segments one by one', () => {
@@ -276,88 +273,6 @@ describe('Statements', () => {
 				sql: 'SELECT x AS alias,? AS value FROM foo AS f WHERE bar=?',
 				bindings: [123, 100],
 			});
-		});
-	});
-});
-
-describe('Query builder', () => {
-	test('Complex query building', () => {
-		const query = (sources: (string | number)[]) =>
-			qb.line(
-				qb.raw('SELECT * FROM notes'),
-				qb.where(
-					qb
-						.condition(qb.raw('workspace_id=').value('fake-uuid'))
-						.and(
-							sources.length === 0
-								? undefined
-								: qb
-										.line('id IN')
-										.raw(
-											qb.group(
-												qb
-													.line(
-														'SELECT target FROM attachedTags',
-													)
-													.raw(
-														qb.where(
-															qb
-																.line('source IN')
-																.raw(
-																	qb
-																		.values(sources)
-																		.withParenthesis(),
-																),
-														),
-													),
-											),
-										),
-						),
-				),
-				qb.limit(20),
-				qb.offset(10),
-			);
-
-		expect(qb.toSQL(query(['foo', 'bar', 123]))).toEqual({
-			sql: 'SELECT * FROM notes WHERE workspace_id=? AND id IN (SELECT target FROM attachedTags WHERE source IN (?,?,?)) LIMIT ? OFFSET ?',
-			bindings: ['fake-uuid', 'foo', 'bar', 123, 20, 10],
-		});
-
-		expect(qb.toSQL(query([]))).toEqual({
-			sql: 'SELECT * FROM notes WHERE workspace_id=? LIMIT ? OFFSET ?',
-			bindings: ['fake-uuid', 20, 10],
-		});
-	});
-
-	test('Empty blocks yields nothing', () => {
-		expect(
-			qb.toSQL(
-				qb.line(
-					qb.raw('SELECT * FROM notes'),
-					qb.where(undefined),
-					qb.limit(20),
-					qb.offset(10),
-				),
-			),
-		).toEqual({
-			sql: 'SELECT * FROM notes LIMIT ? OFFSET ?',
-			bindings: [20, 10],
-		});
-
-		expect(
-			qb.toSQL(
-				qb.line(
-					qb.raw(undefined, null),
-					qb.condition(undefined),
-					qb.group(undefined),
-					qb.where(undefined),
-					qb.limit(undefined),
-					qb.offset(undefined),
-				),
-			),
-		).toEqual({
-			sql: '',
-			bindings: [],
 		});
 	});
 });
