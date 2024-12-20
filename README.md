@@ -1,3 +1,5 @@
+[![](https://img.shields.io/npm/v/nano-queries.svg)](https://www.npmjs.com/package/nano-queries) ![](https://github.com/vitonsky/nano-queries/actions/workflows/codeql-analysis.yml/badge.svg)
+
 Simple and powerful query builder for any database.
 
 
