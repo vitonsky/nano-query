@@ -5,7 +5,8 @@ Simple and powerful query builder for any database.
 
 The purpose of **query builder** is to simplify building a complex (SQL) query for database in safe manner.
 
-That's only thing current package can do for you. Here's not a queries executor, mapper, ORM, etc.
+A `nano-queries` package is focused to be an ideal query builder,
+that's only thing current package can do. Here's not a queries executor, mapper, ORM, etc. We are respect [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) here.
 
 That's why this solution works well with any database - SQLite, Postgres, MySQL, Oracle, etc.
 
